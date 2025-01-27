@@ -31,7 +31,7 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Comment out or remove CORS config
             .authorizeHttpRequests(auth -> 
                 auth.requestMatchers("/api/auth/**").permitAll()
                     .anyRequest().authenticated()
@@ -39,6 +39,8 @@ public class AuthConfig {
             .build();
     }
 
+    // Remove or comment out this bean
+    /*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -52,6 +54,7 @@ public class AuthConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+    */
     
     @Bean
     public PasswordEncoder passwordEncoder() {
