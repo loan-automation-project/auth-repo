@@ -14,7 +14,7 @@ import java.util.Set;
 public class UserCredentialsEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private int id;
+        private Long id;
         @Column(unique = true, nullable = false)
         private String username;
         private String firstName;
@@ -36,7 +36,7 @@ public class UserCredentialsEntity {
         public UserCredentialsEntity() {
         }
 
-        public UserCredentialsEntity(int id, String username, String firstName, String lastName, String fullName, String mobileNumber, String gender, String age, String email, String password, Set<Role> roles) {
+        public UserCredentialsEntity(Long id, String username, String firstName, String lastName, String fullName, String mobileNumber, String gender, String age, String email, String password, Set<Role> roles) {
                 this.id = id;
                 this.username = username;
                 this.firstName = firstName;
@@ -58,11 +58,11 @@ public class UserCredentialsEntity {
                 this.age = age;
         }
 
-        public int getId() {
+        public Long getId() {
                 return id;
         }
 
-        public void setId(int id) {
+        public void setId(Long id) {
                 this.id = id;
         }
 

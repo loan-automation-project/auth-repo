@@ -2,6 +2,7 @@ package com.demo.authentication_service.controller;
 
 import com.demo.authentication_service.dao.entity.UserCredentialsEntity;
 import com.demo.authentication_service.dao.entity.Role;
+import com.demo.authentication_service.dto.UserDTO;
 import com.demo.authentication_service.service.JwtService;
 import com.demo.authentication_service.service.UserCredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +102,27 @@ public class UserCredentialsController {
         public void setMessage(String message) {
             this.message = message;
         }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId) {
+        UserCredentialsEntity user = userCredService.findById(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setFullName(user.getFullName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setMobileNumber(user.getMobileNumber());
+        userDTO.setGender(user.getGender());
+        userDTO.setAge(user.getAge());
+        
+        return ResponseEntity.ok(userDTO);
     }
 }
 

@@ -12,9 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import com.demo.authentication_service.client.CustomerServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserCredentialsService {
+    private static final Logger log = LoggerFactory.getLogger(UserCredentialsService.class);
+
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -23,6 +28,8 @@ public class UserCredentialsService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private CustomerServiceClient customerServiceClient;
 
     @Transactional
     public UserCredentialsEntity register(UserCredentialsEntity user) {
@@ -72,6 +79,14 @@ public class UserCredentialsService {
         user.setRoles(roles);
         UserCredentialsEntity savedUser = authDao.save(user);
         System.out.println("User registered successfully with ID: " + savedUser.getId());
+        
+        // Notify customer service about new user
+        try {
+            customerServiceClient.createCustomerWithUserId(Long.valueOf(savedUser.getId()));
+        } catch (Exception e) {
+            log.error("Error notifying customer service: {}", e.getMessage());
+        }
+        
         return savedUser;
     }
 
@@ -91,5 +106,10 @@ public class UserCredentialsService {
                     System.out.println("User not found: " + name);
                     return new UsernameNotFoundException("User not found");
                 });
+    }
+
+    public UserCredentialsEntity findById(Long userId) {
+        return authDao.findById(userId.intValue())
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
     }
 }
