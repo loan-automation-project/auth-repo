@@ -1,9 +1,11 @@
 package com.demo.authentication_service.service;
 
+import com.demo.authentication_service.client.CustomerServiceClient;
 import com.demo.authentication_service.dao.UserCredentialsDao;
 import com.demo.authentication_service.dao.entity.UserCredentialsEntity;
 import com.demo.authentication_service.dao.entity.Role;
 import com.demo.authentication_service.dao.RoleDao;
+import com.demo.authentication_service.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class UserCredentialsService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private CustomerServiceClient customerServiceClient;
 
     @Transactional
     public UserCredentialsEntity register(UserCredentialsEntity user) {
@@ -71,6 +75,21 @@ public class UserCredentialsService {
 
         user.setRoles(roles);
         UserCredentialsEntity savedUser = authDao.save(user);
+
+        // Copy required fields into DTO
+        CustomerDTO customerDetailsDto = new CustomerDTO();
+        customerDetailsDto.setUserId(savedUser.getId());
+        customerDetailsDto.setUsername(savedUser.getUsername());
+        customerDetailsDto.setFullName(savedUser.getFullName());
+        customerDetailsDto.setEmail(savedUser.getEmail());
+        customerDetailsDto.setAge(savedUser.getAge());
+        customerDetailsDto.setGender(savedUser.getGender());
+        customerDetailsDto.setPhone(savedUser.getMobileNumber());
+
+
+        // Send DTO to Customer MicroService
+        customerServiceClient.createCustomer(customerDetailsDto);
+
         System.out.println("User registered successfully with ID: " + savedUser.getId());
         return savedUser;
     }
